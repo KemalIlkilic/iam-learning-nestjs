@@ -1,4 +1,14 @@
-import { Controller, Get, Put, Delete, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Delete,
+  Post,
+  HttpException,
+  HttpStatus,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { SongsService } from './songs.service';
 
 @Controller('songs')
@@ -8,13 +18,29 @@ export class SongsController {
   create() {
     return this.songsService.create('Yildizlar by Reckol');
   }
+
   @Get()
   findAll() {
-    return this.songsService.findAll();
+    try {
+      return this.songsService.findAll();
+    } catch (e) {
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        { cause: e },
+      );
+    }
   }
+
   @Get(':id')
-  findOne() {
-    return 'fetch song on the based on id';
+  findOne(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ) {
+    return `fetch song on the based on id: ${id} ${typeof id}`;
   }
   @Put(':id')
   update() {
