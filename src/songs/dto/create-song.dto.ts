@@ -12,17 +12,22 @@ export class CreateSongDto {
   @IsString()
   @IsNotEmpty()
   readonly title;
+
   @IsNotEmpty()
   @IsArray()
   //Decorated with @IsString({ each: true }) to ensure each element in the array is a string.
   @IsString({ each: true })
   readonly artists;
+
   @IsDateString()
   @IsNotEmpty()
+  //year/month/day
+  //2021-06-29
   readonly releasedDate: Date;
+
   //HH:MM format. (military time)
-  //14:30
   @IsMilitaryTime()
   @IsNotEmpty()
+  //14:30
   readonly duration: Date;
 }
