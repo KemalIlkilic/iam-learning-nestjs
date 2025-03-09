@@ -13,18 +13,10 @@ import {
 } from '@nestjs/common';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto';
-import { Connection } from 'src/common/constants/connection';
 
 @Controller('songs')
 export class SongsController {
-  constructor(
-    private songsService: SongsService,
-    //here we prove the type
-    @Inject('CONNECTION') private connection: Connection,
-  ) {
-    //private key ekledigimiz icin this.connection.CONNECTION_STRING seklinde erisebiliyoruz
-    console.log(`connection string: ${this.connection.CONNECTION_STRING}`);
-  }
+  constructor(private songsService: SongsService) {}
   @Post()
   create(@Body() createSongDTO: CreateSongDto) {
     const results = this.songsService.create(createSongDTO);
