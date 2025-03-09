@@ -9,24 +9,34 @@ import {
   Param,
   ParseIntPipe,
   Body,
-  Inject,
 } from '@nestjs/common';
 import { SongsService } from './songs.service';
 import { CreateSongDto } from './dto/create-song.dto';
+import { Song } from './song.entity';
+import { UpdateSongDto } from './dto/update-song.dto';
+import { UpdateResult } from 'typeorm';
 
 @Controller('songs')
 export class SongsController {
   constructor(private songsService: SongsService) {}
+
   @Post()
-  create(@Body() createSongDTO: CreateSongDto) {
-    const results = this.songsService.create(createSongDTO);
-    return results;
+  async create(@Body() createSongDTO: CreateSongDto): Promise<Song> {
+    try {
+      return await this.songsService.create(createSongDTO);
+    } catch (e) {
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        { cause: e },
+      );
+    }
   }
 
   @Get()
-  findAll() {
+  async findAll(): Promise<Song[]> {
     try {
-      return this.songsService.findAll();
+      return await this.songsService.findAll();
     } catch (e) {
       throw new HttpException(
         'Internal Server Error',
@@ -37,21 +47,50 @@ export class SongsController {
   }
 
   @Get(':id')
-  findOne(
+  async findOne(
     @Param(
       'id',
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
-  ) {
-    return `fetch song on the based on id: ${id} ${typeof id}`;
+  ): Promise<Song> {
+    try {
+      return await this.songsService.findOne(id);
+    } catch (e) {
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        { cause: e },
+      );
+    }
   }
+
   @Put(':id')
-  update() {
-    return 'update song on the based on id';
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateSongDTO: UpdateSongDto,
+  ): Promise<UpdateResult> {
+    try {
+      return await this.songsService.update(id, updateSongDTO);
+    } catch (e) {
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        { cause: e },
+      );
+    }
   }
+
   @Delete(':id')
-  delete() {
-    return 'delete a song on the based on id';
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    try {
+      return await this.songsService.remove(id);
+    } catch (e) {
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        { cause: e },
+      );
+    }
   }
 }
