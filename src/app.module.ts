@@ -1,12 +1,24 @@
+import { Config } from './../node_modules/@sqltools/formatter/lib/core/types.d';
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SongsModule } from './songs/songs.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { DatabaseModule } from './common/database/database.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
+import dbConfig from './config/db.config';
 
 @Module({
-  imports: [SongsModule, DatabaseModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [dbConfig],
+    }),
+    SongsModule,
+    TypeOrmModule.forRootAsync({
+      useFactory: dbConfig,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
