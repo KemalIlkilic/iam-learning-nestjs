@@ -1,9 +1,11 @@
 import { Artist } from 'src/artists/artist.entity';
+import { Playlist } from 'src/playlists/playlist.entity';
 import {
   Column,
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -30,4 +32,10 @@ export class Song {
 
   @Column({ type: 'text', nullable: true })
   lyrics: string | null;
+
+  /**
+   * Many songs can belong to the playlist for each unique user
+   */
+  @ManyToOne(() => Playlist, (playList) => playList.songs)
+  playList: Playlist;
 }
